@@ -4,7 +4,7 @@
         "invert": 0
     },
     "capabilities": [
-        "configurable"
+        ""
     ],
     "companyName": "jonwgeorge/abonhote",
     "enableMultiJS": false,
@@ -20,12 +20,12 @@
             },
             {
                 "file": "fonts/minecraftia.ttf",
-                "name": "MINECRAFTIA_16",
+                "name": "MINECRAFTIA_24",
                 "type": "font"
             },
             {
                 "file": "fonts/minecraftia.ttf",
-                "name": "MINECRAFTIA_24",
+                "name": "MINECRAFTIA_16",
                 "type": "font"
             },
             {

@@ -14,6 +14,7 @@ TextLayer *battery_layer;
 TextLayer *charge_layer;
 TextLayer *connection_layer;
 
+
 static void handle_battery(BatteryChargeState charge_state) {
   static char battery_text[] = "\uf004 \uf004 \uf004 \uf004 \uf0e7";
   static char charge_text[] = "   ";
@@ -55,13 +56,22 @@ static void handle_minute_tick(struct tm* tick_time, TimeUnits units_changed) {
   handle_battery(battery_state_service_peek());
 }
 
-static void handle_bluetooth(bool connected) {
-  text_layer_set_text(connection_layer, connected ? "\uf09e" : "\uf071");
-  
+void set_signal(bool connected, bool pulse) {
   if (!connected) {
-    vibes_double_pulse();
+    text_layer_set_text_color(connection_layer, GColorIcterine);
+    text_layer_set_text(connection_layer,"\uf071");
+    if (pulse == 1) vibes_double_pulse() ;
+  } else {
+    text_layer_set_text_color(connection_layer, GColorVividCerulean);
+    text_layer_set_text(connection_layer,"\uf09e");
   }
 }
+
+
+static void handle_bluetooth(bool connected) {
+  set_signal(connected, true);
+}
+
 
 void in_received_handler(DictionaryIterator *received, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "In received called");
@@ -163,7 +173,10 @@ static void do_init(void) {
 
   tick_timer_service_subscribe(SECOND_UNIT, &handle_minute_tick);
   battery_state_service_subscribe(&handle_battery);
-  bluetooth_connection_service_subscribe(&handle_bluetooth);
+  
+  connection_service_subscribe((ConnectionHandlers) {
+    .pebble_app_connection_handler = &handle_bluetooth
+  });
   
   app_message_register_inbox_received(in_received_handler);
   app_message_register_inbox_dropped(in_dropped_handler);
@@ -179,6 +192,10 @@ static void do_init(void) {
   layer_add_child(root_layer, text_layer_get_layer(connection_layer));
   layer_add_child(root_layer, text_layer_get_layer(battery_layer));
   layer_add_child(root_layer, text_layer_get_layer(charge_layer));
+  
+  // Set the triangle if there's no connection - even after returning from somewhere else  
+  bool app_connection = connection_service_peek_pebble_app_connection();
+  set_signal(app_connection,false);
 }
 
 static void do_deinit(void) {
