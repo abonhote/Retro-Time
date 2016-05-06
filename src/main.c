@@ -17,14 +17,14 @@ TextLayer *connection_layer;
 static char bt_conn[] = "\uf09e"; // \uf071
 static char bt_disconn[] = "\uf071";
 static char batt_char_full[] = "\uf005";
-static char batt_char_half[] = "\uf123";
+// static char batt_char_half[] = "\uf123";
 static char batt_char_empt[] = "\uf006";
 
 static void handle_battery(BatteryChargeState charge_state) {
   static char battery_text[] = "\uf004 \uf004 \uf004 \uf004 \uf004 \uf0e7"; // initialize, so we know the length
   static char charge_text[] = "   ";
   
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Battery Status: %d", charge_state.charge_percent);
+ // APP_LOG(APP_LOG_LEVEL_DEBUG, "Battery Status: %d", charge_state.charge_percent);
 
   if (charge_state.charge_percent > 80) {
     #ifdef PBL_COLOR
@@ -148,7 +148,7 @@ static void do_init(void) {
   date_layer = text_layer_create(GRect(0, 93, frame.size.w /* width */, 34/* height */));
   connection_layer = text_layer_create(GRect(-2, 2, /* width */ frame.size.w, 34 /* height */));
   battery_layer = text_layer_create(GRect(2, 2, /* width */ frame.size.w, 34 /* height */));
-  charge_layer = text_layer_create(GRect(64, 2, /* width */ frame.size.w, 34 /* height */));
+  charge_layer = text_layer_create(GRect(76, 2, /* width */ frame.size.w, 34 /* height */));
   
   // Set Colors, if required
   text_layer_set_text_color(time_layer, GColorWhite);
@@ -165,7 +165,7 @@ static void do_init(void) {
   #ifdef PBL_COLOR
     text_layer_set_text_color(connection_layer, GColorVividCerulean);
     text_layer_set_text_color(battery_layer, GColorYellow);
-    text_layer_set_text_color(charge_layer, GColorIcterine);
+    text_layer_set_text_color(charge_layer, GColorPastelYellow);
   #else
     text_layer_set_text_color(connection_layer, GColorWhite);
     text_layer_set_text_color(battery_layer, GColorWhite);
