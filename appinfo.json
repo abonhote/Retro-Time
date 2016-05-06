@@ -30,7 +30,14 @@
             },
             {
                 "file": "fonts/fontawesome-webfont.ttf",
+                "name": "FONT_AWESOME_16",
+                "targetPlatforms": null,
+                "type": "font"
+            },
+            {
+                "file": "fonts/fontawesome-webfont.ttf",
                 "name": "FONT_AWESOME_12",
+                "targetPlatforms": null,
                 "type": "font"
             }
         ]

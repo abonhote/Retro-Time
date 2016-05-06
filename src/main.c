@@ -14,25 +14,53 @@ TextLayer *battery_layer;
 TextLayer *charge_layer;
 TextLayer *connection_layer;
 
+static char bt_conn[] = "\uf09e"; // \uf071
+static char bt_disconn[] = "\uf071";
+static char batt_char_full[] = "\uf005";
+static char batt_char_half[] = "\uf123";
+static char batt_char_empt[] = "\uf006";
 
 static void handle_battery(BatteryChargeState charge_state) {
-  static char battery_text[] = "\uf004 \uf004 \uf004 \uf004 \uf0e7";
+  static char battery_text[] = "\uf004 \uf004 \uf004 \uf004 \uf004 \uf0e7"; // initialize, so we know the length
   static char charge_text[] = "   ";
+  
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Battery Status: %d", charge_state.charge_percent);
 
-  if (charge_state.charge_percent > 75) {
-    snprintf(battery_text, sizeof(battery_text), "\uf004 \uf004 \uf004 \uf004");
-  } else if (charge_state.charge_percent > 50) {
-    snprintf(battery_text, sizeof(battery_text), "\uf004 \uf004 \uf004 \uf08a");
-  } else if (charge_state.charge_percent > 25) {
-    snprintf(battery_text, sizeof(battery_text), "\uf004 \uf004 \uf08a \uf08a");
-  } else if (charge_state.charge_percent > 0) {
-    snprintf(battery_text, sizeof(battery_text), "\uf004 \uf08a \uf08a \uf08a");
+  if (charge_state.charge_percent > 80) {
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(battery_layer, GColorYellow);
+    #endif
+    snprintf(battery_text,sizeof(battery_text),"%s %s %s %s %s",batt_char_full, batt_char_full, batt_char_full, batt_char_full, batt_char_full);
+  } else if (charge_state.charge_percent > 60) {
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(battery_layer, GColorYellow);
+    #endif
+    snprintf(battery_text,sizeof(battery_text),"%s %s %s %s %s",batt_char_full, batt_char_full, batt_char_full, batt_char_full, batt_char_empt);
+  } else if (charge_state.charge_percent > 40) {
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(battery_layer, GColorYellow);
+    #endif
+    snprintf(battery_text,sizeof(battery_text),"%s %s %s %s %s",batt_char_full, batt_char_full, batt_char_full, batt_char_empt, batt_char_empt);
+  } else if (charge_state.charge_percent > 20) {
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(battery_layer, GColorYellow);
+    #endif
+    snprintf(battery_text,sizeof(battery_text),"%s %s %s %s %s",batt_char_full, batt_char_full, batt_char_empt, batt_char_empt, batt_char_empt);
+  } else if (charge_state.charge_percent > 5) {
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(battery_layer, GColorRed);
+    #endif
+    snprintf(battery_text,sizeof(battery_text),"%s %s %s %s %s",batt_char_full, batt_char_empt, batt_char_empt, batt_char_empt, batt_char_empt);
   } else {
-    snprintf(battery_text, sizeof(battery_text), "\uf08a \uf08a \uf08a \uf08a");
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(battery_layer, GColorRed);
+    #endif
+    snprintf(battery_text,sizeof(battery_text),"%s %s %s %s %s",batt_char_empt, batt_char_empt,batt_char_empt, batt_char_empt, batt_char_empt);
   }
   
   if (charge_state.is_charging) {
     snprintf(charge_text, sizeof(charge_text), "\uf0e7");
+    //snprintf(charge_text, sizeof(charge_text), "\uf1e6");
   } else {
     snprintf(charge_text, sizeof(charge_text), "   ");
   }
@@ -58,12 +86,16 @@ static void handle_minute_tick(struct tm* tick_time, TimeUnits units_changed) {
 
 void set_signal(bool connected, bool pulse) {
   if (!connected) {
-    text_layer_set_text_color(connection_layer, GColorIcterine);
-    text_layer_set_text(connection_layer,"\uf071");
-    if (pulse == 1) vibes_double_pulse() ;
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(connection_layer, GColorIcterine);
+    #endif
+    text_layer_set_text(connection_layer,bt_disconn);
+   // if (pulse == 1) vibes_double_pulse() ;
   } else {
-    text_layer_set_text_color(connection_layer, GColorVividCerulean);
-    text_layer_set_text(connection_layer,"\uf09e");
+    #ifdef PBL_COLOR
+      text_layer_set_text_color(connection_layer, GColorVividCerulean);
+    #endif
+    text_layer_set_text(connection_layer,bt_conn);
   }
 }
 
@@ -132,7 +164,7 @@ static void do_init(void) {
     
   #ifdef PBL_COLOR
     text_layer_set_text_color(connection_layer, GColorVividCerulean);
-    text_layer_set_text_color(battery_layer, GColorSunsetOrange);
+    text_layer_set_text_color(battery_layer, GColorYellow);
     text_layer_set_text_color(charge_layer, GColorIcterine);
   #else
     text_layer_set_text_color(connection_layer, GColorWhite);
@@ -153,7 +185,7 @@ static void do_init(void) {
   // Init the text layer used to show bluetooth connection
   text_layer_set_font(connection_layer, awesome_font);
   text_layer_set_text_alignment(connection_layer, GTextAlignmentRight);
-  text_layer_set_text(connection_layer, "\uf09e");
+  text_layer_set_text(connection_layer, bt_conn);
 
   // Init the text layer used to show the battery percentage
   text_layer_set_font(battery_layer, awesome_font);
